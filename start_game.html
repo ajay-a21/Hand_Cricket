@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Start Game</title>
+</head>
+<body>
+	<h1>Hand Cricket Game</h1>
+	<form action="{{ url_for('play_game') }}" method="POST">
+		<label for="ball1">Ball 1:</label>
+		<input type="number" id="ball1" name="ball1" required><br><br>
+		<label for="ball2">Ball 2:</label>
+		<input type="number" id="ball2" name="ball2" required><br><br>
+		<label for="ball3">Ball 3:</label>
+		<input type="number" id="ball3" name="ball3" required><br><br>
+		<label for="ball4">Ball 4:</label>
+		<input type="number" id="ball4" name="ball4" required><br><br>
+		<label for="ball5">Ball 5:</label>
+		<input type="number" id="ball5" name="ball5" required><br><br>
+		<label for="ball6">Ball 6:</label>
+		<input type="number" id="ball6" name="ball6" required><br><br>
+		<input type="submit" value="Submit">
+	</form>
+</body>
+</html>
