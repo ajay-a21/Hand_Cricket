@@ -4,7 +4,6 @@
 
 # schedule 1  3 # Computer # Bowl       # 4 # Player   # Bat
 
-
 import random
 
 print(" TossTime ! ")

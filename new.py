@@ -5,9 +5,12 @@ import random
 import time
 
 cap = cv2.VideoCapture(0)
+
 while not cap.isOpened():
     cap = cv2.VideoCapture(0)
     cv2.waitKey(1000)
+
+innings1 = 0
 
 initHand = mediapipe.solutions.hands
 mainHand = initHand.Hands(min_detection_confidence=0.8, min_tracking_confidence=0.8)
@@ -17,12 +20,11 @@ def handLandmarks(colorImg):
     landmarkList = []
     landmarkPositions = mainHand.process(colorImg) 
     landmarkCheck = landmarkPositions.multi_hand_landmarks
-    if landmarkCheck:
+    if landmarkCheck :
         for hand in landmarkCheck:
             for index, landmark in enumerate(
                     hand.landmark):
-                draw.draw_landmarks(img, hand,
-                                    initHand.HAND_CONNECTIONS) 
+                draw.draw_landmarks(img, hand,initHand.HAND_CONNECTIONS) 
                 h, w, c = img.shape
                 centerX, centerY = int(landmark.x * w), int(landmark.y * h)
                 landmarkList.append([index, centerX, centerY])
@@ -63,6 +65,7 @@ while True :
             print("Player Won The Toss and choose to Bowl First")
             schedule = 0
             break
+
     else :
         print("TossLossed ): ")
         input1 = random.randint(0,1)
@@ -74,23 +77,27 @@ while True :
             print("Computer Won The Toss and choose to Bowl First")
             schedule = 1
             break
-    
+
 # Computer Won The Toss and choose to Bat First
 # Player Won The Toss and choose to Bowl First
 
 # computerBatting
 # PlayerBowling
 
+schedule = 0 
+
 if schedule == 0 :
 
     innings1 = 0
 
     while True :
-        #bowl = int(input("Bowl -----> "))
-        bowl = 7
+
         ret, img = cap.read()
         if not ret:
             break
+        #bowl = int(input("Bowl -----> "))
+        bowl = 0
+        
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         lmList = handLandmarks(imgRGB)
 
@@ -98,26 +105,37 @@ if schedule == 0 :
             finger = fingers(lmList)
             fingerCount = np.sum(finger)
             bowl = fingerCount
-
-        cv2.imshow("Webcam", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        
         if bowl not in range(0,7) :
             print("Bowlcorrectly")
+            time.sleep(2)
             continue
+
         autoBat = random.randint(0,6)
         if innings1 >= 200 :
             autoBat = bowl
             break
+
         if bowl == autoBat :
-            print("ComputerOut !")
-            time.sleep(25)
+            print("ComputerOut ! ")
+            time.sleep(10)
             break
+
         print("LastBall run (auto): " , autoBat)
         innings1 += autoBat
+
         print("LiveScore ",innings1)
+
+        cv2.putText(img, f"Innings 1: {innings1}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+        cv2.imshow("Webcam", img)
+
+        time.sleep(5)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
         
-    print("Target for player : ",innings1)
+    print("Target for player : ",innings1+1)
     target = innings1+1
     print(" * InningsBreak * ")
 
@@ -133,6 +151,7 @@ if schedule == 0 :
         ret, img = cap.read()
         if not ret:
             break
+
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         lmList = handLandmarks(imgRGB)
 
@@ -140,26 +159,33 @@ if schedule == 0 :
             finger = fingers(lmList)
             fingerCount = np.sum(finger)
             bat = fingerCount
-        #cv2.putText(img, f"Fingers: {fingerCount}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
-        cv2.imshow("Webcam", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
         if bat not in range(0,7) :
             print("BatCorrectly")
-            time.sleep(3)
+            time.sleep(2)
             continue
+
         autoBowl = random.randint(0,6)
         if bat == autoBowl :
             print("PlayerOut !")
             break
+
         print("LastBall (auto): ",autoBowl)
         innings2 += bat
         target -= bat
+
+        cv2.putText(img, f"Innings2: {innings2}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+
+        cv2.imshow("Webcam", img)
+        time.sleep(4)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
         print("Second innings live score : ",innings2)
         if innings2 > innings1 :
             print("PlayerWon !")
             break
+
     if innings2 == innings1 :
         print("MatchTied")
     elif innings2 < innings1 :
@@ -190,28 +216,31 @@ else :
             finger = fingers(lmList)
             fingerCount = np.sum(finger)
             bat = fingerCount
-        #cv2.putText(img, f"Fingers: {fingerCount}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
-        cv2.imshow("Webcam", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
         if bat not in range(0,7) :
             print("BatCorrectly ")
-            time.sleep(3)
+            time.sleep(2)
             continue
         autoBowl = random.randint(0,6)
         if innings1 >= 200 :
             autoBowl = bat
             break
+
         if bat == autoBowl :
             print("PlayerOut !")
             time.sleep(25)
             break
+
         print("LastBall (auto): " , autoBowl)
         innings1 += bat
+
         cv2.putText(img, f"LiveScore innings1: {innings1}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        cv2.imshow("Webcam", img)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
         print("LiveScore ",innings1)
-        time.sleep(3)
+        time.sleep(5)
         
     print("Target For Computer : ",innings1+1)
     target = innings1+1
@@ -236,12 +265,9 @@ else :
             fingerCount = np.sum(finger)
             bowl = fingerCount
 
-        cv2.imshow("Webcam", img)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
         if bowl not in range(0,7) :
             print("BowlCorrectly")
-            time.sleep(3)
+            time.sleep(2)
             continue
         autoBat = random.randint(0,6)
         if bowl == autoBat :
@@ -249,8 +275,13 @@ else :
             break
         print("LastBall run (auto): ",autoBat)
         innings2 += autoBat
+
         cv2.putText(img, f"LiveScore innings2: {innings2}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        cv2.imshow("Webcam", img)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
         target -= autoBat
+
         print("Second innings live score : ",innings2)
         if innings2 > innings1 :
             print("ComputerWon !")
