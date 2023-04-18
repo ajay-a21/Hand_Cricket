@@ -1,9 +1,38 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+        <br>
+        <h1>Match Summary : </h1>
+        <style>
+          body {
+                  background-color: rgb(180, 244, 243);
+                }
+            h1 {
+              font-size: 24px;
+              margin: 10px;
+              color: black;
+            }
+            p {
+              display: inline-block;
+              width: 150px;
+            }
+            .score {
+              display: inline-block;
+              width: 50px;
+              border: 1px solid white;
+              padding: 5px;
+            } 
+          </style>
     </head>
+    <br><br><br><br><br>
     <body>
-        <h1>{{data}}</h1>
+        <center>
+          <br><br>
+            <h1>{{data}} {{differenceRun}}</h1> <br><br><br><br>
+            <p>playerScore    : </p> <div class="score">{{player}}</div>
+            <p>computerScore  : </p> <div class="score">{{computer}}</div> 
+            <br><br><br><br>
+            <a href ="{{ url_for('toss') }}" class="button-85" role="button"><b>Continue to Next Match !</b></a>
+        </center>
     </body>
 </html>

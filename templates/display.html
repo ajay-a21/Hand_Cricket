@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html>
     <head>
-
+        <style>
+            body {
+                    background-color: rgb(180, 244, 243);
+                  }
+          </style>
     </head>
     <body>
+        <center>
+            <br><br><br>
         <h1>{{ message }}</h1>
-        <input type="button" id="play" onclick="play()">
+        <br><br><br><br><br><br>
+        <input type="button" id="play" onclick="play()" value="Continue">
         <script>
-            function play() {
-
-                    window.location.href = "{{ url_for('bowl') }}";
-                
+            function play() 
+            {
+                    window.location.href = "{{ url_for('bowl') }}";  
             }
         </script>
+        </center>
     </body>
 </html>

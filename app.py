@@ -8,7 +8,10 @@ db = client['mydatabase']
 
 @app.route('/')
 def index():
-    return redirect(url_for('login'))
+    return render_template('login.html')
+
+global message
+global tossResult 
 
 @app.route('/login')
 def login():
@@ -18,9 +21,9 @@ def login():
 def login_post():
     email = request.form['email']
     password = request.form['password']
-    
     global currUser
     user = db.users.find_one({'email': email})
+    print(db.users.find_one({'email': email}))
     currUser = user['username']
     
     if user and user['password'] == password:
@@ -30,7 +33,6 @@ def login_post():
     else:
         message = 'Invalid email or password.'
         return redirect(url_for('register'))
-
 
 @app.route('/register')
 def register():
@@ -58,7 +60,6 @@ def register_post():
 
     return render_template('register.html', message = message)
 
-
 @app.route('/toss')
 def toss():
     return render_template('toss.html')
@@ -72,10 +73,12 @@ def Heads():
         return render_template('batBowl.html', message = message)
     val = random.randint(0,1)
     if(val==0):
+        tossResult = 1
         message = "Computer Won the Toss and choose to Bat First"
     else:   
         message = "Computer Won the Toss and choose to Bowl First"
-    return render_template('display.html', message = message, val = int(val))
+        
+    return render_template('display.html', message = message)
 
 @app.route('/Tails')
 def Tails():
@@ -89,13 +92,14 @@ def Tails():
         return render_template('batBowl.html', message = message)
     val = random.randint(0,1)
     if(val==0):
+        tossResult = 1
         message = "Computer Won the Toss and choose to Bat First"
     else:   
         message = "Computer Won the Toss and choose to Bowl First"
-    return render_template('display.html', message = message, val = int(val))
+    return render_template('display.html', message = message)
 
 @app.route('/bat')
-def bat():
+def bat(): 
     import cv2
     import mediapipe
     import numpy as np
@@ -137,6 +141,7 @@ def bat():
                     h, w, c = img.shape
                     centerX, centerY = int(landmark.x * w), int(landmark.y * h)
                     landmarkList.append([index, centerX, centerY])
+
         return landmarkList
 
     def fingers(landmarks):
@@ -154,6 +159,7 @@ def bat():
         return fingerTips
 
     flag , computer , player , sleep , bowl , autoBat ,  bat , autoBowl = 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0
+
     data = "Lost ):" 
     while True:
 
@@ -161,14 +167,12 @@ def bat():
         if not ret:
             break
         
-        # Convert image to RGB for Mediapipe processing
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        # Process image with Mediapipe hand detection
         results = mainHand.process(imgRGB)
 
-        # Check if hand(s) are detected
         if results.multi_hand_landmarks:
+            
             if sleep % 30 == 0 : 
                 sleep = 0
                 lmList = handLandmarks(imgRGB)
@@ -192,13 +196,33 @@ def bat():
         cv2.putText(img, f"HighScore     : {highscore}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (230, 230, 230), 2)
         cv2.putText(img, f"ComputerScore : {computer}", (10, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         cv2.imshow('Hand Detection', img)
+
         if flag == 1 :
-            time.sleep(10)
             break
         if cv2.waitKey(1) == ord('q'):
             break
 
     flag = 0
+
+    for i in range(1,120) :
+        ret, img = cap.read()
+        if not ret:
+            break
+        tempData = "Wicket !"
+        cv2.putText(img, f"Result : {tempData}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        cv2.imshow('Hand Detection', img)
+        if cv2.waitKey(1) == ord('q'):
+            break
+
+    for i in range(1,300) :
+        ret, img = cap.read()
+        if not ret:
+            break
+        tempData = "Innings Break !"
+        cv2.putText(img, f"Session : {tempData}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+        cv2.imshow('Hand Detection', img)
+        if cv2.waitKey(1) == ord('q'):
+            break
 
     while True:
 
@@ -206,13 +230,10 @@ def bat():
         if not ret:
             break
         
-        # Convert image to RGB for Mediapipe processing
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-        # Process image with Mediapipe hand detection
         results = mainHand.process(imgRGB)
 
-        # Check if hand(s) are detected
         if results.multi_hand_landmarks:
             if sleep % 30 == 0 : 
                 sleep = 0
@@ -221,10 +242,12 @@ def bat():
 
                     finger = fingers(lmList)
                     bat = finger
-                    
+                    if bat == 5 :
+                        bat = 6
                     # Match 
                     autoBowl = random.randint(0,5)
-                    
+                    if autoBowl == 5 :
+                        autoBowl = 5
                     if bat != autoBowl :
                         player += bat
                     else :
@@ -239,18 +262,17 @@ def bat():
         cv2.imshow('Hand Detection', img)
 
         if flag == 1 :
-            time.sleep(10)
             break
 
         if player >= computer :
-            data = "ScoreLevel !"
+            data = "Match tied !"
             if player > computer :
                 data = "Won (:"
                 break 
         if cv2.waitKey(1) == ord('q'):
             break
 
-    while True :
+    for i in range(1,600) :
         ret, img = cap.read()
         if not ret:
             break
@@ -258,26 +280,34 @@ def bat():
         cv2.imshow('Hand Detection', img)
         if cv2.waitKey(1) == ord('q'):
             break
-        time.sleep(15)
-        break
 
     cap.release()
     cv2.destroyAllWindows()
+
     collection.insert_one({'player':player,'computer':computer})
+    differenceRun = abs(player - computer)
+    if data == "Match tied !" :
+        resultOfMatch = "Match Tied between Player and Computer"
+    elif data == "Won (:":
+        resultOfMatch = "Player won Computer by "
+    else :
+        resultOfMatch = "Computer won player by "
 
-    return render_template('scoreboard.html', data = data)
-
+    return render_template('scoreboard.html', data = resultOfMatch ,differenceRun = differenceRun , player = player , computer = computer) 
+ 
 @app.route('/bowl')
 def bowl():
     return redirect(url_for('bat'))
-
+    
 @app.route('/profile')
 def profile():
-    
+
     userNameProfile = db.users.find_one({'username': currUser})
     email = userNameProfile['email']
     
     return render_template('profile.html', username = currUser, email = email)
 
+
 if __name__ == '__main__':
     app.run()
+

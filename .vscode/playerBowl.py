@@ -89,18 +89,38 @@ while True:
                 else :
                     flag = 1
         sleep += 1
+       
     cv2.putText(img, f"Computer : {autoBat}", (350, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (190, 100, 10), 2)
     cv2.putText(img, f"Player   : {bowl}", (350, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (210, 170, 250), 2)
     cv2.putText(img, f"HighScore     : {highscore}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (230, 230, 230), 2)
     cv2.putText(img, f"ComputerScore : {computer}", (10, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     cv2.imshow('Hand Detection', img)
     if flag == 1 :
-        time.sleep(10)
         break
     if cv2.waitKey(1) == ord('q'):
         break
 
 flag = 0
+
+for i in range(1,120) :
+    ret, img = cap.read()
+    if not ret:
+        break
+    tempData = "Wicket !"
+    cv2.putText(img, f"Result : {tempData}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    cv2.imshow('Hand Detection', img)
+    if cv2.waitKey(1) == ord('q'):
+        break
+
+for i in range(1,300) :
+    ret, img = cap.read()
+    if not ret:
+        break
+    tempData = "Innings Break !"
+    cv2.putText(img, f"Session : {tempData}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
+    cv2.imshow('Hand Detection', img)
+    if cv2.waitKey(1) == ord('q'):
+        break
 
 while True:
 
@@ -116,7 +136,7 @@ while True:
 
     # Check if hand(s) are detected
     if results.multi_hand_landmarks:
-        if sleep % 30 == 0 : 
+        if sleep == 30 : 
             sleep = 0
             lmList = handLandmarks(imgRGB)
             if len(lmList) != 0:
@@ -132,17 +152,13 @@ while True:
                 else :
                     flag = 1
                     print("out !")
-
         sleep += 1
+
     cv2.putText(img, f"Computer : {autoBowl}", (350, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (190, 100, 10), 2)
     cv2.putText(img, f"Player   : {bat}", (350, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (210, 170, 250), 2)
     cv2.putText(img, f"Target      : {computer+1}", (10, 70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
     cv2.putText(img, f"PlayerScore : {player}", (10, 140), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
     cv2.imshow('Hand Detection', img)
-
-    if flag == 1 :
-        time.sleep(10)
-        break
 
     if player >= computer :
         data = "ScoreLevel !"
@@ -151,8 +167,10 @@ while True:
             break 
     if cv2.waitKey(1) == ord('q'):
         break
+    if flag == 1 :
+        break
 
-while True :
+for i in range(1,600) :
     ret, img = cap.read()
     if not ret:
         break
@@ -160,9 +178,6 @@ while True :
     cv2.imshow('Hand Detection', img)
     if cv2.waitKey(1) == ord('q'):
         break
-    time.sleep(15)
-    break
 
 cap.release()
 cv2.destroyAllWindows()
-collection.insert_one({'player':player,'computer':computer})

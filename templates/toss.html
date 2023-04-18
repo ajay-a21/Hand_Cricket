@@ -2,13 +2,32 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+        body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                background-color: rgb(180, 244, 243);
+                height: 100vh;
+              }
+        .toss {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20%;
+            width: 20%;
+        }
+    </style>
 </head>
 <body>
-    <center>
-        <h1>Toss Time</h1><br><br>
-        <a href = "{{ url_for('Heads') }}"><img style = "margin-top: 100px;"height = "300px" width = "250px" src = "https://imgs.search.brave.com/tgn5RLJO4W94hBtcAzzeCqgRt6QYiidXwgFPnKKa-AM/rs:fit:300:225:1/g:ce/aHR0cHM6Ly90c2Ux/Lm1tLmJpbmcubmV0/L3RoP2lkPU9JRi5q/TXBpRXlyU3pBQmd6/T2prOHFYSWxBJnBp/ZD1BcGk"></a>
-       <a href = "{{ url_for('Tails') }}"> <img height = "300px" width = "250px" src = "https://imgs.search.brave.com/Yq7y4FiEIM2siFlanVQeqFd4mErE3JAGrmjn7-LEtC8/rs:fit:474:494:1/g:ce/aHR0cHM6Ly9pLmVi/YXlpbWcuY29tL2lt/YWdlcy9nL21uRUFB/T1N3VGg5aU5RUHAv/cy1sNTAwLmpwZw"></a>
-    </center>
+    
+        <h1>Toss Time</h1>
+        <div class="toss">
+            <a href = "{{ url_for('Heads') }}" class="button-85" role="button"> <b> HEADS </b></a> 
+            <a href = "{{ url_for('Tails') }}" class="button-85" role="button"> <b> TAILS </b></a>
+        </div>
+    
 
 </body>
 </html>
